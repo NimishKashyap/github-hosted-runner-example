@@ -7,8 +7,7 @@ on:
         description: "Enter playground account name"
         required: true
       env-name:
-        description: "Enter environment name"
-        default: "default"
+        description: "Enter environment name (Leave blank if you want to use default)"
 
 env:
   PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
@@ -49,11 +48,12 @@ jobs:
         run: |
           sed -i "s/__TOKEN__/$TOKEN/g" param-file.yaml
           sed -i "s/__ORGANIZATION__/$ORG/g" param-file.yaml
-          cat param-file.yaml
-      - name: Use env
+      - name: Use env if not empty
         shell: bash
         run: |
-          playground env use $PLAYGROUND_ACCOUNT_NAME/$ENV
+          if [ $ENV ]; then
+            playground env use $PLAYGROUND_ACCOUNT_NAME/$ENV
+          fi
           if [ $? -ne 0 ]; then
             playground env create "$PLAYGROUND_ACCOUNT_NAME/$ENV"
             echo "ENVIRONMENT CREATED: $PLAYGROUND_ACCOUNT_NAME/$ENV"
@@ -63,3 +63,37 @@ jobs:
         shell: bash
         run: |
           playground catalog deploy napptive/github-runner:2.298.2 --setParametersFromFile param-file.yaml
+
+      - name: Wait for app to deploy
+        shell: bash
+        run: |
+          playground apps wait github-runner
+  launch-unit-tests:
+    needs: create-napptive-env
+    runs-on: napptive
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+  cleanup-runner:
+    needs: [create-napptive-env, launch-unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove Runner
+        uses: napptive-actions/playground-github-actions@v3.0.1
+        continue-on-error: true 
+        with: 
+          cmd: "apps remove github-runner"
+          environment: ${{ github.event.inputs.env-name }}
+      - name: Remove environment 
+        uses: napptive-actions/playground-github-actions@v3.0.1
+        continue-on-error: true 
+        with: 
+          cmd: "env remove $PLAYGROUND_ACCOUNT_NAME/$ENV"
