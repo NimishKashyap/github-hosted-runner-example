@@ -86,14 +86,13 @@ jobs:
     needs: [create-napptive-env, launch-unit-tests]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Remove Runner
         uses: napptive-actions/playground-github-action@v6.1.0
-        continue-on-error: true 
         with: 
           cmd: "apps remove github-runner"
           environment: ${{ github.event.inputs.env-name }}
       - name: Remove environment 
-        uses: napptive-actions/playground-github-actions@v3.0.1
-        continue-on-error: true 
+        uses: napptive-actions/playground-github-action@v6.1.0
         with: 
           cmd: "env remove $PLAYGROUND_ACCOUNT_NAME/$ENV"
