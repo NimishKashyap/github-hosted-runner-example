@@ -9,9 +9,6 @@ on:
       env-name:
         description: "Enter environment name"
         default: "default"
-      runner-token:
-        description: "Enter runner token"
-        required: true
 
 env:
   PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
