@@ -42,7 +42,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/orgs/$ORG/actions/runners/registration-token)
           echo $RESPONSE
-          TOKEN=$(echo $RESPONSE | jq -r '.token')
+          echo "TOKEN=$(echo $RESPONSE | jq -r '.token')" >> $GITHUB_ENV
       - name: Replace token in param file
         shell: bash
         run: |
@@ -51,7 +51,7 @@ jobs:
       - name: Use env if not empty
         shell: bash
         run: |
-          if [ -n $ENV ]; then
+          if [ $ENV ]; then
             playground env use $PLAYGROUND_ACCOUNT_NAME/$ENV
           fi
           if [ $? -ne 0 ]; then
@@ -70,7 +70,7 @@ jobs:
           playground apps wait github-runner
   launch-unit-tests:
     needs: create-napptive-env
-    runs-on: [self-hosted, napptive]
+    runs-on: napptive
     steps:
       - name: Checkout
         uses: actions/checkout@v3
