@@ -28,5 +28,6 @@ jobs:
       - name: Run script
         shell: bash
         run: |
+          ls
           chmod +x ./scripts/github-runner.sh
           ./scripts/github-runner.sh
