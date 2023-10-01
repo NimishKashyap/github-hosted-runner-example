@@ -43,7 +43,7 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/orgs/$ORG/actions/runners/registration-token)
           echo $RESPONSE
-          TOKEN=$(echo $RESPONSE | jq -r '.token')
+          echo "TOKEN=$(echo $RESPONSE | jq -r '.token')" >> $GITHUB_ENV
       - name: Replace token in param file
         shell: bash
         run: |
