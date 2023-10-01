@@ -1,0 +1,35 @@
+name: Git Runner Deployer
+
+on:
+  workflow_dispatch:
+    inputs:
+      playground-account-name:
+        description: "Enter playground account name"
+        required: true
+      env-name:
+        description: "Enter environment name"
+        default: "default"
+      runner-token:
+        description: "Enter runner token"
+        required: true
+
+env:
+  PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
+  GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+
+jobs:
+  create-napptive-env:
+    name: Create napptive environment
+    runs-on: ubuntu-latest
+    env:
+      ENV: ${{ github.event.inputs.env-name }}
+      PLAYGROUND_ACCOUNT_NAME: ${{ github.event.inputs.playground-account-name }}
+      ORG: ${{ github.repository_owner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run script
+        shell: bash
+        run: |
+          chmod +x ./scripts/github-runner.sh
+          ./scripts/github-runner.sh
