@@ -12,7 +12,7 @@ on:
 
 env:
   PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT }}
-  GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+  GITHUB_PAT: ${{ secrets.GH_PAT }}
 
 jobs:
   create-napptive-env:
