@@ -26,7 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install jq
-        run: apt install jq
+        run: sudo apt install jq
       - name: Install napptive CLI
         shell: bash
         run: curl -O https://storage.googleapis.com/artifacts.playground.napptive.dev/installer.sh && bash installer.sh
@@ -49,6 +49,7 @@ jobs:
         run: |
           sed -i "s/__TOKEN__/$TOKEN/g" param-file.yaml
           sed -i "s/__ORGANIZATION__/$ORG/g" param-file.yaml
+          cat param-file.yaml
       - name: Use env
         shell: bash
         run: |
